@@ -8,62 +8,23 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  accounts  Account[]
-  sessions  Session[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
-model Account {
-  id                String  @id @default(uuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(uuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_token")
-}
-
 model Ingredient {
-  id           String             @id @default(uuid())
+  id           String   @id @default(uuid())
   name         String
   category     Category
   unit         Unit
-  pricePerUnit Float?             @map("price_per_unit")
+  pricePerUnit Float?   @map("price_per_unit")
   description  String?
-  recipes       RecipeIngredient[]
+  recipes      RecipeIngredient[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -89,11 +50,11 @@ enum Unit {
 }
 
 model Recipe {
-  id          String             @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String
-  imageUrl    String?            @map("image_url")
-  ingredients  RecipeIngredient[]
+  imageUrl    String?  @map("image_url")
+  ingredients RecipeIngredient[]
 
   @@map("recipes")
 }
