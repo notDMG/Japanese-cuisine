@@ -14,3 +14,10 @@ export const UNIT_OPTIONS = [
   { value: 'LITERS', label: 'Liters' },
   { value: 'PIECES', label: 'Pieces' },
 ]
+
+export function getUnitLabel(unit: string) {
+  return (
+    UNIT_OPTIONS.find((option) => option.value === unit)?.label ??
+    unit.toLowerCase()
+  )
+}

@@ -22,13 +22,14 @@ const recipeInclude = {
 export async function getRecipes(): Promise<GetRecipeResult> {
   const session = await auth()
 
-  if (!session?.user) {
-    return { error: 'Access denied. Please log in.' }
-  }
+  const authorId = session?.user?.id
+  if (!authorId) return { error: 'Access denied. Please log in' }
 
   try {
     const recipes = await prisma.recipe.findMany({
+      where: { authorId },
       include: recipeInclude,
+      orderBy: { createdAt: 'desc' },
     })
     return { success: true, recipes }
   } catch (error) {

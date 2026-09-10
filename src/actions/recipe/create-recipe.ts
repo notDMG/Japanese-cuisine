@@ -10,9 +10,8 @@ export async function createRecipe(
 ): Promise<RecipeActionResult> {
   const session = await auth()
 
-  if (!session?.user) {
-    return { error: 'Access denied. Please log in' }
-  }
+  const authorId = session?.user?.id
+  if (!authorId) return { error: 'Access denied. Please log in' }
 
   const parsed = recipeSchema.safeParse(formData)
 
@@ -31,10 +30,11 @@ export async function createRecipe(
         imageUrl: imageUrl || null,
         ingredients: {
           create: ingredients.map(({ ingredientId, quantity }) => ({
-            ingredient: { connect: { id: ingredientId } },
+            ingredientId,
             quantity,
           })),
         },
+        authorId,
       },
       include: {
         ingredients: {

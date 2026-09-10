@@ -10,12 +10,13 @@ type GetIngredientResult =
 export async function getIngredients(): Promise<GetIngredientResult> {
   const session = await auth()
 
-  if (!session?.user) {
-    return { error: 'Access denied. Please log in.' }
-  }
+  const authorId = session?.user?.id
+  if (!authorId) return { error: 'Access denied. Please log in' }
 
   try {
-    const ingredients = await prisma.ingredient.findMany()
+    const ingredients = await prisma.ingredient.findMany({
+      where: { authorId },
+    })
     return { success: true, ingredients }
   } catch (error) {
     console.error('Error retrieving ingredients', error)

@@ -11,12 +11,19 @@ export async function updateRecipe(
 ): Promise<RecipeActionResult> {
   const session = await auth()
 
-  if (!session?.user) {
-    return { error: 'Access denied. Please log in.' }
+  const authorId = session?.user?.id
+  if (!authorId) {
+    return { error: 'Access denied. Please log in' }
   }
 
   if (!id) {
     return { error: 'Invalid recipe ID' }
+  }
+
+  const existing = await prisma.recipe.findUnique({ where: { id } })
+  if (!existing) return { error: 'Recipe not found' }
+  if (existing.authorId !== authorId) {
+    return { error: 'You can only edit your only recipe' }
   }
 
   const parsed = recipeSchema.safeParse(formData)

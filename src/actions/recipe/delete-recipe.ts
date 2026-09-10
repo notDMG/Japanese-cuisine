@@ -7,12 +7,19 @@ import { prisma } from '@/utils/prisma'
 export async function deleteRecipe(id: string): Promise<ActionResult> {
   const session = await auth()
 
-  if (!session?.user) {
+  const authorId = session?.user?.id
+  if (!authorId) {
     return { error: 'Access denied. Please log in' }
   }
 
   if (!id) {
     return { error: 'Invalid recipe ID' }
+  }
+
+  const existing = await prisma.recipe.findUnique({ where: { id } })
+  if (!existing) return { error: 'Recipe not found' }
+  if (existing.authorId !== authorId) {
+    return { error: 'You can only delete your own recipes' }
   }
 
   try {
